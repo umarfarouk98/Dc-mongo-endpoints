@@ -1,6 +1,8 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
+header("Access-Control-Allow-Origin: https://www.dawahbox.com/mongo/api/");
+
 require_once("../db.inc");
 
 $collection = $db_connect->tbl_category_try;
