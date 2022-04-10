@@ -1,6 +1,8 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
-
+    
+    header("Access-Control-Allow-Origin: https://www.dawahbox.com/mongo/api/");
+    
     require_once("../db.inc");
     
     ini_set('display_errors', 1);
@@ -92,13 +94,13 @@ else {
             // ['$count' => 'id']
         ]
     );
+    
     foreach ($result as $row) {
         unset($row['_id']);
-        // unset($row['joinTab'][0]['_id']);
-        // echo json_encode($row);
         $albums[] = $row;
     }
-    // echo json_encode($albums);
+    
+
     $rewriteKey = array();
     $newArr = array();
     foreach ($albums as $key => $value) {
@@ -106,7 +108,14 @@ else {
         $rewriteKey[$key]['img'] = $albums[$key]['joinTab'][0]['album_image'];
         $rewriteKey[$key]['nid'] = $albums[$key]['joinTab'][0]['aid'];
         // $rewriteKey[$key]['cats'] = $albums[$key]['joinTab2'][0]['name'];
-        $rewriteKey[$key]['lang'] = $albums[$key]['joinTab3'][0]['name'];
+        
+        if (empty($albums[$key]['joinTab3'][0])) {
+             $rewriteKey[$key]['lang'] = "nil";
+        }else{
+            $rewriteKey[$key]['lang'] = $albums[$key]['joinTab3'][0]['name'];
+        }
+        
+        // $rewriteKey[$key]['lang'] = $albums[$key]['joinTab3'][0]['name'];
         // $rewriteKey[$key]['lec_no'] = $albums[$key][''];
         // $rewriteKey[$key]['reciter'] = $albums[$key][''];
         $rewriteKey[$key]['rpname'] = $albums[$key]['joinTab4'][0]['name'];
