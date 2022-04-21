@@ -1,40 +1,31 @@
 <?php
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Origin: *");
+    header("Content-Type: application/json; charset=UTF-8");
+    header("Access-Control-Allow-Origin: *");
 
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+    
 require_once("../db.inc");
 //----------------------------------------------------------------------------//
-if (isset($_GET['page']) && (isset($_GET['catid'])) && (isset($_GET['langid'])) ) {
+if (isset($_GET['page']) && (isset($_GET['catid']))) {
 
     $getpage = intval($_GET['page']);
     $id = $_GET['catid'];
-    $lang = intval($_GET['langid']);
+
 
     $limit = 20;
     $skip = ($getpage - 1) * $limit;
-    $match_try = ['$match' => ['lang_id' => $lang, 'cat_id' => $id]];
 
     
-}else if ((isset($_GET['catid'])) && (isset($_GET['page'])) ) {
-    
-    $getpage = intval($_GET['page']);
-    $id = $_GET['catid'];
-
-    
-    $limit = 100;
-    $skip = ($getpage - 1) * $limit;
-    $match_try = ['$match' => ['cat_id' => $id]];
-
 }else if ((isset($_GET['catid']))) {
     
-    $id = $_GET['catid'];
+    $id = strval($_GET['catid']);
 
     $skip = 0;
     $limit = 20;
-    $match_try = ['$match' => ['cat_id' => $id]];
 
-}
-else {
+}else {
     echo 'you must specify an argument';
 }
 //-----------//---------//---------//--------//--------//------------//----------//
@@ -42,8 +33,12 @@ else {
 
     //----------------------------------------------------//
     //--------------table left join-----------------------//
+    // echo $id;
     $collection = $db_connect->tbl_mp3; //to: <collection1 to join>,
     
+//----------------------------------------------------------------------------//
+
+
     $ops2 = [ // (2)
         '$lookup' => [
             'from' => 'tbl_lang', //from: <collection2 to join>,
@@ -61,23 +56,31 @@ else {
         ],
     ];
     
-    $result = $collection->aggregate(
+    $result = $collection -> aggregate(
         [
-            $match_try,
+            ['$match' => ['cat_id' => $id]],
             $ops2,
             $ops3,
             ['$skip' => $skip],
-            ['$limit' => $limit],
+            ['$limit' => 100],
         ]
     );
+    // $search = [$id => ['$all' => ['40260', '40300', '40375'] ] ];
+    // $search = ['rp_id' => ['$all' => [33, 34]]];
+    // $search = [
+    //         'cat_id' => $id,
+    //     ];
+    // $opt = ['limit' => 100];
+    // $result = $collection->find($search, $opt);
 //-----------//---------//---------//--------//--------//------------//----------//
 
     foreach ($result as $row) {
         unset($row['_id']);
         $albums[] = $row;
     }
+    // echo json_encode($albums);
+    
     $rewriteKey = array();
-    $newArr = array();
     foreach ($albums as $key => $value) {
         
         $rewriteKey[$key]['nid'] = $albums[$key]['id'];
@@ -101,6 +104,8 @@ else {
         }
         $rewriteKey[$key]['audio'] = $albums[$key]['mp3_url'];
         $rewriteKey[$key]['img'] = $albums[$key]['img'];
+        
+        
     }
     echo json_encode($rewriteKey);
 

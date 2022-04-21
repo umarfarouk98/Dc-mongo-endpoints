@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
-header("Access-Control-Allow-Origin: https://www.dawahbox.com/mongo/api/");
+header("Access-Control-Allow-Origin: *");
 
 require_once("../db.inc");
 

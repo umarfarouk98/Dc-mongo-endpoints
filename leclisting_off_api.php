@@ -1,6 +1,7 @@
 <?php
 
     header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Origin: *");
     
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
@@ -10,7 +11,7 @@
 
 if (isset($_GET['offset'])) {
     $offset = intval($_GET['offset']);
-    $db_find = $db_connect->tbl_mp3;
+    $db_find = $db_connect->tbl_mp3_new;
     
     $ops = [ // (1)
         '$lookup' => [
@@ -45,7 +46,7 @@ if (isset($_GET['offset'])) {
             $ops2,
             $ops3,
             ['$skip' => $offset],
-            ['$limit' => 100],
+            ['$limit' => 20],
         ]
     );
     foreach ($result as $document) {
@@ -53,18 +54,32 @@ if (isset($_GET['offset'])) {
         $albums[] =  $document;
     }
     // echo json_encode($albums);
+    
     $rewriteKey = array();
     $newArr = array();
     foreach ($albums as $key => $value) {
+        
         $rewriteKey[$key]['title'] = $albums[$key]['mp3_title'];
         $rewriteKey[$key]['audio'] = $albums[$key]['mp3_url'];
-        $rewriteKey[$key]['img'] = $albums[$key]['mp3_thumbnail'];
+        $rewriteKey[$key]['img'] = $albums[$key]['img'];
         $rewriteKey[$key]['nid'] = $albums[$key]['id'];
-        $rewriteKey[$key]['lang'] = $albums[$key]['joinTab2'][0]['name'];
-        $rewriteKey[$key]['reciter'] = $albums[$key]['mp3_title'];
         $rewriteKey[$key]['rpname'] = $albums[$key]['joinTab3'][0]['name'];
-        // $rewriteKey[$key]['cats'] = $albums[$key]['joinTab'][0]['name'];
-        $rewriteKey[$key]['cats'] = ['boys'];
+
+        if (empty($albums[$key]['joinTab2'][0])) {
+            
+            $rewriteKey[$key]['lang'] = "";
+            
+        } else {
+            
+            $rewriteKey[$key]['lang'] = $albums[$key]['joinTab2'][0]['name'];
+        }
+        if (empty($albums[$key]['cat_name'])) {
+
+            $rewriteKey[$key]['cats'] = "";
+        } else {
+
+            $rewriteKey[$key]['cats'] = $albums[$key]['cat_name'];
+        }
     }
     echo json_encode($rewriteKey);
 } else {
