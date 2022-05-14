@@ -74,7 +74,7 @@
 
     function ret_aggreg(){
         global $db_connect, $opt, $filt1, $limit;
-        $db_find = $db_connect->tbl_mp3_try;   
+        $db_find = $db_connect->tbl_mp3;   
         
         $ops = [ // (1)
             '$lookup' => [
@@ -101,7 +101,7 @@
     }
 
 
-    //------------------return-final-output------------------------------------------
+    //------------------return-final-output------------------------------------------//
     
     function final_resul(){
         
@@ -124,14 +124,25 @@
                 $rewriteKey[$key]['lang'] = $albums[$key]['joinTab'][0]['name'];
                 $rewriteKey[$key]['nid'] = $albums[$key]['id'];
                 $rewriteKey[$key]['cats'] = $albums[$key]['cat_name'];
+                $rewriteKey[$key]['duration'] = $albums[$key]['mp3_duration'];
+                $rewriteKey[$key]['description'] = $albums[$key]['mp3_description'];
+                
                 
                 if (isset($albums[$key]['views'])){
                         
                     $albums[$key]['views'] = $albums[$key]['views'];
                     $rewriteKey[$key]['views'] = $albums[$key]['views'];
                 }else{
-                    $albums[$key]['views'] = "";
+                    $albums[$key]['views'] = 0;
                     $rewriteKey[$key]['views'] = $albums[$key]['views'];
+                }
+                if (isset($albums[$key]['downloads'])){
+                        
+                    $albums[$key]['downloads'] = $albums[$key]['downloads'];
+                    $rewriteKey[$key]['downloads'] = $albums[$key]['downloads'];
+                }else{
+                    $albums[$key]['downloads'] = 0;
+                    $rewriteKey[$key]['downloads'] = $albums[$key]['downloads'];
                 }
                  
                 //------------------------------------------------------------//   

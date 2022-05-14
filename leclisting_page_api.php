@@ -72,8 +72,27 @@ if (empty($albums)) {
         $rewriteKey[$key]['lang'] = $albums[$key]['joinTab'][0]['name'];
         $rewriteKey[$key]['nid'] = $albums[$key]['id'];
         $rewriteKey[$key]['cats'] = $albums[$key]['cat_name'];
+        $rewriteKey[$key]['duration'] = $albums[$key]['mp3_duration'];
+        $rewriteKey[$key]['description'] = $albums[$key]['mp3_description'];
 
         $rewriteKey[$key]['rp'] = $albums[$key]['joinTab2'][0]['name'];
+        
+        if (isset($albums[$key]['downloads'])){
+            $albums[$key]['downloads'] = $albums[$key]['downloads'];
+            $rewriteKey[$key]['downloads'] = $albums[$key]['downloads'];
+        }else{
+            $albums[$key]['downloads'] = 0;
+            $rewriteKey[$key]['downloads'] = $albums[$key]['downloads'];
+        }
+        
+        if (isset($albums[$key]['views'])){
+            
+            $albums[$key]['views'] = $albums[$key]['views'];
+            $rewriteKey[$key]['views'] = $albums[$key]['views'];
+        }else{
+            $albums[$key]['views'] = 0;
+             $rewriteKey[$key]['views'] = $albums[$key]['views'];
+        }
     }
     echo json_encode($rewriteKey);
 }

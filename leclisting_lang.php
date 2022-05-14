@@ -83,6 +83,8 @@ if (isset($_GET['page']) && (isset($_GET['langid']))) {
         $rewriteKey[$key]['img'] = $albums[$key]['img'];
         $rewriteKey[$key]['nid'] = $albums[$key]['id'];
         $rewriteKey[$key]['rpname'] = $albums[$key]['joinTab3'][0]['name'];
+        $rewriteKey[$key]['duration'] = $albums[$key]['mp3_duration'];
+        $rewriteKey[$key]['description'] = $albums[$key]['mp3_description'];
         
         if (empty($albums[$key]['joinTab'][0])) {
             
@@ -98,6 +100,22 @@ if (isset($_GET['page']) && (isset($_GET['langid']))) {
         } else {
     
             $rewriteKey[$key]['cats'] = $albums[$key]['cat_name'];
+        }
+        if (isset($albums[$key]['downloads'])){
+            $albums[$key]['downloads'] = $albums[$key]['downloads'];
+            $rewriteKey[$key]['downloads'] = $albums[$key]['downloads'];
+        }else{
+            $albums[$key]['downloads'] = 0;
+            $rewriteKey[$key]['downloads'] = $albums[$key]['downloads'];
+        }
+        
+        if (isset($albums[$key]['views'])){
+            
+            $albums[$key]['views'] = $albums[$key]['views'];
+            $rewriteKey[$key]['views'] = $albums[$key]['views'];
+        }else{
+            $albums[$key]['views'] = 0;
+             $rewriteKey[$key]['views'] = $albums[$key]['views'];
         }
     }
     echo json_encode($rewriteKey);

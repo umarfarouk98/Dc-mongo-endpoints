@@ -15,7 +15,7 @@ header("Access-Control-Allow-Origin: *");
     function post_to_mongo($albums){
         
         global $db_connect;
-        $mpcoll = $db_connect->tbl_mp3_try;
+        $mpcoll = $db_connect->tbl_mp3;
         
         
         $document = $mpcoll->updateOne(
@@ -64,7 +64,7 @@ header("Access-Control-Allow-Origin: *");
             $id = intval($_GET['id']);
             $filt = ['$match' =>['id' => $id] ];
         
-            $collection = $db_connect->tbl_mp3_try; 
+            $collection = $db_connect->tbl_mp3; 
         
             $ops = [ // (1)
                 '$lookup' => [
@@ -98,7 +98,7 @@ header("Access-Control-Allow-Origin: *");
             }
         
             if (empty($albums)) {
-                echo 'empty';
+                echo 'null';
             } else {
                 $rewriteKey = array();
                 foreach ($albums as $key => $value) {
@@ -108,6 +108,8 @@ header("Access-Control-Allow-Origin: *");
                     $rewriteKey[$key]['audio'] = $albums[$key]['mp3_url'];
                     $rewriteKey[$key]['img'] = $albums[$key]['img'];
                     $rewriteKey[$key]['cats'] = $albums[$key]['cat_name'];
+                    $rewriteKey[$key]['duration'] = $albums[$key]['mp3_duration'];
+                     $rewriteKey[$key]['description'] = $albums[$key]['mp3_description'];
                     
                     if (isset($albums[$key]['downloads'])){
                         
