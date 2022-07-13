@@ -2,58 +2,53 @@
 
     header("Content-Type: application/json; charset=UTF-8");
     header("Access-Control-Allow-Origin: *");
-    
-    require_once("../db.inc");
-    
+
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
 
+    require_once("../db.inc");
+    
+if( (isset($_GET['lim'])) && (isset($_GET['langid'])) && (isset($_GET['key'])) && (isset($_GET['page'])) ) {
+    
+    $getpage = intval($_GET['page']);
+    $limit = intval($_GET['lim']);
+    $lang = intval($_GET['langid']);
+    $key = strval($_GET['key']);
+    
+    $skip = ($getpage - 1) * $limit;
+    $filt1 = ['lang_id' => $lang, 'key_id' => $key];
+    
+}else if (isset($_GET['key']) && (isset($_GET['langid'])) && (isset($_GET['page'])) ) {
+    
+    $getpage = intval($_GET['page']);
+    $key = strval($_GET['key']);
+    $lang = intval($_GET['langid']);
+    $limit = 20;
+    
+    $skip = ($getpage - 1) * $limit;
+    $filt1 = ['key_id' => $key, 'lang_id' => $lang];
+    
+    
+}else if( (isset($_GET['key'])) && (isset($_GET['page'])) ) {
+    
+    $getpage = intval($_GET['page']);
+    $key = strval($_GET['key']);
+    $limit = 20;
+    
+    $skip = ($getpage - 1) * $limit;
+    $filt1 = ['key_id' => $key];
+    
+}else {
+    echo 'null';
+}
 
-if ( isset($_GET['page']) && (isset($_GET['lim'])) && (isset($_GET['langid'])) ) {
-    
-    $getpage = intval($_GET['page']);
-    $limit = intval($_GET['lim']);
-    $lang = intval($_GET['langid']);
-    
-    // $limit = 20;
-    $skip = ($getpage - 1) * $limit;
-    $match_try = ['lang_id' => $lang];
-    
-} else if(( isset($_GET['page']) && (isset($_GET['lim'])))){ //match_try = [];
-    
-    $getpage = intval($_GET['page']);
-    $limit = intval($_GET['lim']);
-    $skip = ($getpage - 1) * $limit;
-    
-    $match_try = [] ;
-        
-} else if(( isset($_GET['page']) && (isset($_GET['langid'])))){ //limt = 20 default
-    
-    $getpage = intval($_GET['page']);
-    $limit = 20;
-    $lang = intval($_GET['langid']);
-    $skip = ($getpage - 1) * $limit;
-    
-    // [ 'lec_no': [ $gt: 0 ] ]
-    
-    $match_try = ['lang_id' => $lang];
-    
-} else if(( isset($_GET['page']))) {
-    
-    $getpage = intval($_GET['page']);
-    $limit = 20;
-    $skip = ($getpage - 1) * $limit;
-    
-    $match_try = [];
-}
-else {
-    echo 'you must specify an argument';
-}
+
+
 //-------------------------------------------------------------------------//
     $db_find = $db_connect->tbl_album;
    
-    $searchCriteria = $match_try;
+    $searchCriteria = $filt1;
     $opt = ['skip' => $skip, 'limit' => $limit];
     $result = $db_find->find($searchCriteria, $opt);
     
@@ -65,12 +60,9 @@ else {
     if (empty($albums)) {
         echo 'null';
     } else {
-        
         $rewriteKey = array();
-        $newArr = array();
         foreach ($albums as $key => $value) {
-            // echo json_encode($value);
-            
+    
             $rewriteKey[$key]['title'] = $albums[$key]['name'];
             $rewriteKey[$key]['img'] = $albums[$key]['img'];
             $rewriteKey[$key]['nid'] = $albums[$key]['id'];
@@ -89,6 +81,22 @@ else {
         
                 $rewriteKey[$key]['categories'] = $albums[$key]['categories'];
             }
+            if (empty($albums[$key]['Keywords'])) {
+    
+                $rewriteKey[$key]['Keyword'] = "";
+            } else {
+                
+                $rewriteKey[$key]['keyword'] = $albums[$key]['Keywords'];
+            }
+            
+            if (empty($albums[$key]['key_id'])) {
+    
+                $rewriteKey[$key]['key_id'] = "";
+            } else {
+                
+                $rewriteKey[$key]['key_id'] = $albums[$key]['key_id'];
+            }
+            
             if (isset($albums[$key]['downloads'])){
                 $albums[$key]['downloads'] = $albums[$key]['downloads'];
                 $rewriteKey[$key]['downloads'] = $albums[$key]['downloads'];
@@ -106,8 +114,8 @@ else {
                  $rewriteKey[$key]['views'] = $albums[$key]['views'];
             }
             
-            
         }
         echo json_encode($rewriteKey);
     }
 
+?>

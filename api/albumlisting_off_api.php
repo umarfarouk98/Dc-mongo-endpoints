@@ -13,7 +13,7 @@ header("Access-Control-Allow-Origin: *");
 if (isset($_GET['offset'])) {
     
     $offset = intval($_GET['offset']);
-    $db_find = $db_connect->tbl_album_try;
+    $db_find = $db_connect->tbl_album;
     
     $searchCriteria = [];
     $opt = ['skip' => $offset, 'limit' => 20];
@@ -55,6 +55,23 @@ if (isset($_GET['offset'])) {
             } else {
         
                 $rewriteKey[$key]['categories'] = $albums[$key]['categories'];
+            }
+            
+            if (isset($albums[$key]['downloads'])){
+                $albums[$key]['downloads'] = $albums[$key]['downloads'];
+                $rewriteKey[$key]['downloads'] = $albums[$key]['downloads'];
+            }else{
+                $albums[$key]['downloads'] = 0;
+                $rewriteKey[$key]['downloads'] = $albums[$key]['downloads'];
+            }
+            
+            if (isset($albums[$key]['views'])){
+                
+                $albums[$key]['views'] = $albums[$key]['views'];
+                $rewriteKey[$key]['views'] = $albums[$key]['views'];
+            }else{
+                $albums[$key]['views'] = 0;
+                 $rewriteKey[$key]['views'] = $albums[$key]['views'];
             }
         
         // }

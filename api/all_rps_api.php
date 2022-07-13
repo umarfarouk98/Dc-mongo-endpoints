@@ -9,21 +9,16 @@ header("Access-Control-Allow-Origin: *");
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
     
-    if (isset($_GET['page'])) {
-    
-        $getpage = intval($_GET['page']);
-        $limit = 20;
-        $skip = ($getpage - 1) * $limit;
+    if (isset($_GET['rp_id'])){
+        
+        $searchCriteria = ['id' => intval($_GET['rp_id'])];
+        $opt = ['sort' => ['id' => 1]];
+        
+    } 
+    else {
         
         $searchCriteria = [];
-        $opt = ['limit' => $limit, 'sort' => ['id' => 1], 'skip' => $skip];
-    
-    } else {
-        $limit = 20;
-        $skip = 0;
-        
-        $searchCriteria = [];
-        $opt = ['sort' => ['id' => 1], 'skip' => $skip];
+        $opt = ['sort' => ['id' => 1]];
     }
 
     
@@ -33,8 +28,14 @@ $result = $rpColl->find($searchCriteria,$opt);
 
 foreach ($result as $document) {
     unset($document['_id']);
+    $document['img'] = str_replace(' ', '%20', $document['img']);
     $albums[] =  $document;
 }
-echo json_encode($albums); 
+
+if(empty($albums)){
+    echo "null";
+}else{
+    echo json_encode($albums); 
+}
 
 ?>

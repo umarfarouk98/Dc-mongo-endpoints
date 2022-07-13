@@ -1,61 +1,30 @@
 <?php
 
     header("Content-Type: application/json; charset=UTF-8");
-    header("Access-Control-Allow-Origin: *");
-    
-    require_once("../db.inc");
-    
+header("Access-Control-Allow-Origin: *");
+
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
 
+    require_once("../db.inc");
+if( (isset($_GET['id'])) ) {
+    
+    
+    $ids = array_map('intval', explode(',', $_GET["id"]));
+    
+    // echo json_encode($ids);
+    
+    // $filt1 = [ 'id' => $ids ];
+    $filt1 =['id' => ['$in' => $ids]];
 
-if ( isset($_GET['page']) && (isset($_GET['lim'])) && (isset($_GET['langid'])) ) {
-    
-    $getpage = intval($_GET['page']);
-    $limit = intval($_GET['lim']);
-    $lang = intval($_GET['langid']);
-    
-    // $limit = 20;
-    $skip = ($getpage - 1) * $limit;
-    $match_try = ['lang_id' => $lang];
-    
-} else if(( isset($_GET['page']) && (isset($_GET['lim'])))){ //match_try = [];
-    
-    $getpage = intval($_GET['page']);
-    $limit = intval($_GET['lim']);
-    $skip = ($getpage - 1) * $limit;
-    
-    $match_try = [] ;
-        
-} else if(( isset($_GET['page']) && (isset($_GET['langid'])))){ //limt = 20 default
-    
-    $getpage = intval($_GET['page']);
-    $limit = 20;
-    $lang = intval($_GET['langid']);
-    $skip = ($getpage - 1) * $limit;
-    
-    // [ 'lec_no': [ $gt: 0 ] ]
-    
-    $match_try = ['lang_id' => $lang];
-    
-} else if(( isset($_GET['page']))) {
-    
-    $getpage = intval($_GET['page']);
-    $limit = 20;
-    $skip = ($getpage - 1) * $limit;
-    
-    $match_try = [];
-}
-else {
-    echo 'you must specify an argument';
-}
-//-------------------------------------------------------------------------//
+//-----------//---------//---------//--------//--------//------------//----------//
+
     $db_find = $db_connect->tbl_album;
    
-    $searchCriteria = $match_try;
-    $opt = ['skip' => $skip, 'limit' => $limit];
-    $result = $db_find->find($searchCriteria, $opt);
+    // $searchCriteria = $match_try;
+    // $opt = ['skip' => $skip, 'limit' => $limit];
+    $result = $db_find->find($filt1);
     
     foreach ($result as $row) {
         unset($row['_id']);
@@ -65,7 +34,6 @@ else {
     if (empty($albums)) {
         echo 'null';
     } else {
-        
         $rewriteKey = array();
         $newArr = array();
         foreach ($albums as $key => $value) {
@@ -89,6 +57,7 @@ else {
         
                 $rewriteKey[$key]['categories'] = $albums[$key]['categories'];
             }
+            
             if (isset($albums[$key]['downloads'])){
                 $albums[$key]['downloads'] = $albums[$key]['downloads'];
                 $rewriteKey[$key]['downloads'] = $albums[$key]['downloads'];
@@ -106,8 +75,11 @@ else {
                  $rewriteKey[$key]['views'] = $albums[$key]['views'];
             }
             
-            
         }
         echo json_encode($rewriteKey);
     }
-
+}else {
+    echo 'null !!';
+}
+    
+?>
